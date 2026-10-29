@@ -1,6 +1,6 @@
-# Road Pothole Segmentation — ARA ITS 2026 Data Science Competition
+# Road Pothole Segmentation — Data Science ARA 7.0 (ITS, 2026)
 
-Binary semantic segmentation of potholes in road photos: for every test image, predict which pixels belong to a pothole. Built for the data science competition at ARA ITS 2026 (Institut Teknologi Sepuluh Nopember) as team **Analyx**.
+Binary semantic segmentation of potholes in road photos: for every test image, predict which pixels belong to a pothole. Built for Data Science ARA 7.0, a Kaggle competition run by ARA at Institut Teknologi Sepuluh Nopember (ITS), as team **Analyx**. Final result: **8th on the private leaderboard** (Dice 0.80370).
 
 The solution fine-tunes a SegFormer with a MiT-B5 encoder, trains one model per fold in 5-fold cross-validation, and averages the five models plus a horizontal-flip TTA at inference.
 
@@ -9,7 +9,9 @@ The solution fine-tunes a SegFormer with a MiT-B5 encoder, trains one model per 
 | Task | Binary segmentation (pothole vs. background) |
 | Data | 498 labelled training images with masks, 295 test images |
 | Metric | Dice |
-| 5-fold CV Dice (mean of best epochs) | **0.827** |
+| 5-fold CV Dice (mean of best epochs) | 0.827 |
+| Public leaderboard (about 30% of test) | 0.77005, 27th |
+| Private leaderboard (about 70% of test, final) | **0.80370, 8th** |
 | Submission format | Run-length encoded masks (`ImageId`, `rle`) |
 
 The competition dataset is not included in this repository.
@@ -32,6 +34,13 @@ The competition dataset is not included in this repository.
 
 ## Results
 
+| Leaderboard | Dice | Rank |
+|---|---|---|
+| Public (about 30% of test images) | 0.77005 | 27 |
+| Private (about 70%, final standings) | 0.80370 | 8 |
+
+The team made 34 submissions in total. The team moved from 27th on the public split to 8th on the private split; with only about 89 images in the public split, public ranks were a weak guide.
+
 Best validation Dice per fold, taken from the training log in the notebook:
 
 | Fold | Best val Dice | Best epoch | Stopped at epoch |
@@ -50,7 +59,7 @@ Validation Dice here is computed on single predictions (no TTA, no post-processi
 ## Limitations
 
 - **The CV score is optimistic.** Each fold reports the Dice of the epoch chosen on that same validation fold, and there is no separate hold-out set.
-- **The validation Dice is not the competition metric as implemented.** It pools pixels over a batch of 4 images, while a per-image Dice would weight small potholes more. Treat 0.827 as an internal number, not as an estimate of the leaderboard score.
+- **The validation Dice is not the competition metric as implemented.** It pools pixels over a batch of 4 images, while a per-image Dice would weight small potholes more. Treat 0.827 as an internal number: the leaderboard scores (0.770 public, 0.804 private) sit below it.
 - **The inference steps were never scored on validation data.** TTA, the 5-fold average, the 0.5 threshold, the 150-pixel filter and the closing radius were set by hand, so their individual effect is unknown.
 - **No ablations.** The notebook does not compare SegFormer with a U-Net, Tversky with plain Dice or BCE, or MiT-B5 with smaller encoders. The choices are reasonable defaults for small, imbalanced masks, not proven winners on this data.
 - **The split is random.** If several photos show the same stretch of road, they can fall into different folds and inflate CV. This was not checked.
@@ -79,3 +88,9 @@ The notebook was run on Kaggle with one NVIDIA Tesla T4. The training log and CV
 3. Install the packages in `requirements.txt` (the first notebook cell does this on Kaggle) and run all cells. Training five MiT-B5 folds needs a GPU.
 
 Output: `best_model_fold{0..4}.pth` and `submission_mitb5_tta.csv`.
+
+## Team and credits
+
+Team **Analyx**, three members. Each member trained their own models and the team submitted whichever scored best. This notebook is my work (Vincent Osbert) and produced the team's best leaderboard score: data pipeline, model and loss choice, 5-fold training, TTA ensemble, post-processing and RLE submission.
+
+The competition, data and leaderboard belong to the Data Science ARA 7.0 organisers at ITS.
