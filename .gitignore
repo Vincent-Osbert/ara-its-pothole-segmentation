@@ -1,0 +1,12 @@
+# Competition data is not redistributed
+dataset/
+*.zip
+
+# Training and inference artifacts
+*.pth
+submission*/
+submission*.csv
+
+# Python / Jupyter
+__pycache__/
+.ipynb_checkpoints/
