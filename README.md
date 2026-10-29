@@ -47,6 +47,16 @@ Best validation Dice per fold, taken from the training log in the notebook:
 
 Validation Dice here is computed on single predictions (no TTA, no post-processing), with a 0.5 threshold, per batch of 4 images and then averaged over batches.
 
+## Limitations
+
+- **The CV score is optimistic.** Each fold reports the Dice of the epoch chosen on that same validation fold, and there is no separate hold-out set.
+- **The validation Dice is not the competition metric as implemented.** It pools pixels over a batch of 4 images, while a per-image Dice would weight small potholes more. Treat 0.827 as an internal number, not as an estimate of the leaderboard score.
+- **The inference steps were never scored on validation data.** TTA, the 5-fold average, the 0.5 threshold, the 150-pixel filter and the closing radius were set by hand, so their individual effect is unknown.
+- **No ablations.** The notebook does not compare SegFormer with a U-Net, Tversky with plain Dice or BCE, or MiT-B5 with smaller encoders. The choices are reasonable defaults for small, imbalanced masks, not proven winners on this data.
+- **The split is random.** If several photos show the same stretch of road, they can fall into different folds and inflate CV. This was not checked.
+- **One training run.** Seeds fix the fold split and the Python, NumPy and PyTorch generators, but cuDNN is not set to deterministic mode, so a rerun will not match the log exactly.
+- **Package versions were not recorded.** With current releases the code runs but warns: `ShiftScaleRotate` is deprecated in albumentations 2.x, and `binary_closing` disappears in scikit-image 0.28 (hence the pin).
+
 ## Repository structure
 
 ```
