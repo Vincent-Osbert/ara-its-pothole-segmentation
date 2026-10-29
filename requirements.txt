@@ -1,0 +1,10 @@
+# On top of the PyTorch/torchvision preinstalled on Kaggle; versions were not pinned during the competition
+segmentation-models-pytorch
+timm
+albumentations
+opencv-python
+scikit-image<0.28   # binary_closing is removed in 0.28
+scikit-learn
+pandas
+matplotlib
+tqdm
